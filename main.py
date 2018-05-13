@@ -5,9 +5,7 @@ import argparse
 from retro import STATE_DEFAULT #, make
 from retro_contest.local import make
 import tensorflow as tf
-from tf import summary_scalar, summary_tensor, summary_histogram, summary_value
 from experiment import Experiment
-from agents.agent import Agent
 from agents.random import RandomAgent
 from agents.random_tf import RandomTFAgent
 

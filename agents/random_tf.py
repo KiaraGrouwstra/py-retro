@@ -1,6 +1,6 @@
 from agents.agent import Agent
 import tensorflow as tf
-from tf import summary_scalar, summary_tensor, summary_histogram, summary_value
+from summ import summary_scalar, summary_tensor, summary_histogram, summary_value
 
 class RandomTFAgent(Agent):
     def __init__(self, env, **kwargs):
