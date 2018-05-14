@@ -1,6 +1,8 @@
 import numpy as np
 from mpl import plot_reward, plot_cum_reward, plot_line, plot_action_count, mk_plot
 
+# spaces: Tuple, Box, Discrete, MultiDiscrete, MultiBinary, Dict
+# now only handles MultiBinary
 class Experiment(object):
     def __init__(self, env, agent, do_render, verbosity):
         self.env = env
@@ -9,9 +11,14 @@ class Experiment(object):
         self.verbosity = verbosity
         self.reward_over_t = np.empty(0)
         self.cum_reward_over_t = np.empty(0)
-        action_shape = self.env.action_space.shape
+        space = self.env.action_space
+        print("space:")
+        print(space)
+        action_shape = space.shape # or space.spaces
+        print("action_shape:")
+        print(action_shape)
         assert len(action_shape) == 1
-        self.action_counts = np.zeros(action_shape[0])
+        self.action_counts = np.zeros(*action_shape)
 
     def report(self):
         plot_reward(self.reward_over_t)
