@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import gym
 # import retro
 from retro import STATE_DEFAULT #, make
 from retro_contest.local import make
@@ -26,7 +27,11 @@ def main():
         'random': RandomAgent,
         'random-tf': RandomTFAgent,
     }
-    env = make(args.game, args.state) # , scenario=args.scenario, record=args.record, obs_type=args.obs_type
+    try:
+        env = make(args.game, args.state) # , scenario=args.scenario, record=args.record, obs_type=args.obs_type
+    except FileNotFoundError:
+        env = gym.make(args.game)
+
     agent = agents[args.agent](env)
     do_render = args.render
     verbosity = args.verbose - args.quiet
