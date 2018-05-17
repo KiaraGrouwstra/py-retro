@@ -3,8 +3,8 @@ import numpy as np
 
 # discrete action spaces, ignores state
 class BanditAgent(Agent):
-    def __init__(self, env, **kwargs):
-        super(BanditAgent, self).__init__(env)
+    def __init__(self, client, instance_id, **kwargs):
+        super(BanditAgent, self).__init__(client, instance_id)
         assert(np.issubdtype(self.dtype, np.integer) == True) # discrete
         assert(self.dims <= 1) # focus on simple case first
         if (self.dims == 0): # Discrete

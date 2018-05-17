@@ -3,8 +3,8 @@ import numpy as np
 
 class GreedyAgent(BanditAgent):
     # todo: better default reward?
-    def __init__(self, env, default = 0.5, **kwargs):
-        super(GreedyAgent, self).__init__(env)
+    def __init__(self, client, instance_id, default = 0.5, **kwargs):
+        super(GreedyAgent, self).__init__(client, instance_id)
         self.default = default
 
     def act(self, obs, **kwargs):

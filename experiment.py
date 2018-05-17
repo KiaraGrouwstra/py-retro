@@ -4,20 +4,21 @@ from mpl import plot_reward, plot_cum_reward, plot_line, plot_action_count, mk_p
 # spaces: Tuple, Box, Discrete, MultiDiscrete, MultiBinary, Dict
 # now only handles MultiBinary
 class Experiment(object):
-    def __init__(self, env, agent, do_render, verbosity):
-        self.env = env
+    def __init__(self, client, instance_id, agent, do_render, verbosity):
+        self.client = client
+        self.instance_id = instance_id
         self.agent = agent
         self.do_render = do_render
         self.verbosity = verbosity
         self.reward_over_t = np.empty(0)
         self.cum_reward_over_t = np.empty(0)
-        space = self.env.action_space
-        print("space:")
-        print(space)
-        action_shape = space.shape # or space.spaces
-        print("action_shape:")
-        print(action_shape)
-        assert len(action_shape) <= 1
+        # space = self.client.env_action_space_info(instance_id)
+        # print("space:")
+        # print(space)
+        # action_shape = space.shape # or space.spaces
+        # print("action_shape:")
+        # print(action_shape)
+        # assert len(action_shape) <= 1
         # self.action_counts = np.zeros((len(action_shape),)) # np.zeros(*action_shape)
 
     def report(self):
@@ -26,7 +27,7 @@ class Experiment(object):
         # plot_action_count(self.action_counts)
 
     def run(self):
-        ob = self.env.reset()
+        ob = self.client.env_reset(self.instance_id)
         t = 0
         totrew = 0
         while True:
@@ -35,7 +36,8 @@ class Experiment(object):
             print("ac:")
             print(ac)
             # self.action_counts[ac] += 1
-            ob_, rew, done, info = self.env.step(ac)
+            # ob_, rew, done, info = self.env.step(ac)
+            ob_, rew, done, info = self.client.env_step(self.instance_id, ac, self.do_render)
             self.agent.learn(ob, ac, rew, ob_, done, t=t, info=info)
             ob = ob_
             t += 1
@@ -45,8 +47,6 @@ class Experiment(object):
                     if info:
                         infostr = ', info: ' + ', '.join(['%s=%i' % (k, v) for k, v in info.items()])
                     print(('t=%i' % t) + infostr)
-                if self.do_render:
-                    self.env.render()
             totrew += rew
             if self.verbosity > 0:
                 if rew > 0:

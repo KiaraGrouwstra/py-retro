@@ -10,6 +10,7 @@ from experiment import Experiment
 from agents.random import RandomAgent
 from agents.greedy import GreedyAgent
 from agents.random_tf import RandomTFAgent
+from gym_http_client import Client
 
 def main():
     parser = argparse.ArgumentParser()
@@ -29,24 +30,37 @@ def main():
         'random-tf': RandomTFAgent,
         'greedy': GreedyAgent,
     }
-    try:
-        env = make(args.game, args.state) # , scenario=args.scenario, record=args.record, obs_type=args.obs_type
-    except FileNotFoundError:
-        env = gym.make(args.game)
 
-    agent = agents[args.agent](env)
+    env_id = args.game
+    remote_base = 'http://127.0.0.1:5050'
+    client = Client(remote_base)
+    envs = client.env_list_all()
+    print(envs)
+    for id, label in envs.items():
+        print('closing env ' + label)
+        client.env_close(id)
+    # try:
+    instance_id = client.env_create(env_id)
+    # except SomeError:
+        # env = make(env_id, args.state) # , scenario=args.scenario, record=args.record, obs_type=args.obs_type
+    outdir = '/tmp/agent-results'
+    client.env_monitor_start(instance_id, outdir, force=True, resume=False, video_callable=False)
+ 
+    agent = agents[args.agent](client, instance_id)
     do_render = args.render
     verbosity = args.verbose - args.quiet
 
     # plt.ion() # enables interactive mode
-    Experiment(env, agent, do_render, verbosity).run()
+    Experiment(client, instance_id, agent, do_render, verbosity).run()
+    client.env_monitor_close(instance_id)
+    client.env_close(instance_id)
+    # # upload Gym score given `os.environ['OPENAI_GYM_API_KEY']=<api_key>`
+    # client.upload(outdir)
     exit(0)
     # try:
     #     while True:
     #         try:
-    #             (t, rew, totrew) = Experiment(env, agent, do_render, verbosity).run()
-    #             # if do_render:
-    #             #     env.render()
+    #             (t, rew, totrew) = Experiment(client, agent, do_render, verbosity).run()
     #             if verbosity >= 0:
     #                 print("done! total reward: time=%i, reward=%d, total_reward=%d" % (t, rew, totrew))
     #                 input("press enter to continue")

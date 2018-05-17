@@ -3,11 +3,10 @@ import tensorflow as tf
 from summ import summary_scalar, summary_tensor, summary_histogram, summary_value
 
 class RandomTFAgent(Agent):
-    def __init__(self, env, **kwargs):
-        super(RandomTFAgent, self).__init__(env)
+    def __init__(self, client, instance_id, **kwargs):
+        super(RandomTFAgent, self).__init__(client, instance_id)
         self.sess = tf.Session()
         self.sess.as_default()
-        self.shape = env.action_space.shape
         self.dist = tf.distributions.Bernoulli(probs=[0.5], name='Bernoulli')
         self.writer = tf.summary.FileWriter('/tmp/log/', self.sess.graph)
         self.action = self.dist.sample(self.shape)
