@@ -8,6 +8,7 @@ from retro_contest.local import make
 import tensorflow as tf
 from experiment import Experiment
 from agents.random import RandomAgent
+from agents.greedy import GreedyAgent
 from agents.random_tf import RandomTFAgent
 
 def main():
@@ -26,6 +27,7 @@ def main():
     agents = {
         'random': RandomAgent,
         'random-tf': RandomTFAgent,
+        'greedy': GreedyAgent,
     }
     try:
         env = make(args.game, args.state) # , scenario=args.scenario, record=args.record, obs_type=args.obs_type

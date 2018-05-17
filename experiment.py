@@ -17,13 +17,13 @@ class Experiment(object):
         action_shape = space.shape # or space.spaces
         print("action_shape:")
         print(action_shape)
-        assert len(action_shape) == 1
-        self.action_counts = np.zeros(*action_shape)
+        assert len(action_shape) <= 1
+        # self.action_counts = np.zeros((len(action_shape),)) # np.zeros(*action_shape)
 
     def report(self):
         plot_reward(self.reward_over_t)
         plot_cum_reward(self.cum_reward_over_t)
-        plot_action_count(self.action_counts)
+        # plot_action_count(self.action_counts)
 
     def run(self):
         ob = self.env.reset()
@@ -32,7 +32,9 @@ class Experiment(object):
         while True:
             # with Timer('act'):
             ac = self.agent.act(ob, t=t)
-            self.action_counts[ac] += 1
+            print("ac:")
+            print(ac)
+            # self.action_counts[ac] += 1
             ob_, rew, done, info = self.env.step(ac)
             self.agent.learn(ob, ac, rew, ob_, done, t=t, info=info)
             ob = ob_
